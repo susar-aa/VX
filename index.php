@@ -217,6 +217,23 @@ $current_user_id = $_SESSION['user_id'];
                 </button>
             </div>
 
+            <!-- Catalog View & Share Buttons -->
+            <div class="grid grid-cols-2 gap-2.5 mt-2.5">
+                <button onclick="window.open('catalog.php', '_blank')" class="bg-dark-800 border border-white/10 font-bold py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2 tap-scale hover:border-lime/40 text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4 text-lime">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+                    <span>View Catalog</span>
+                </button>
+                <button onclick="shareCatalog()" class="bg-dark-800 border border-white/10 font-bold py-3.5 rounded-2xl text-xs flex items-center justify-center gap-2 tap-scale hover:border-lime/40 text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4 text-lime">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" />
+                    </svg>
+                    <span>Share</span>
+                </button>
+            </div>
+
             <!-- Recent Sales Section -->
             <div>
                 <div class="flex items-center justify-between mb-3">
@@ -1634,6 +1651,29 @@ $current_user_id = $_SESSION['user_id'];
             const btn = document.getElementById('pwaInstallContainer');
             if (btn) btn.classList.add('hidden');
         });
+
+        async function shareCatalog() {
+            const shareUrl = window.location.origin + window.location.pathname.replace('index.php', 'catalog.php');
+            const shareText = `🔥 Check out our latest products & active price list on the VX Catalog!\n\nBrowse catalog here: ${shareUrl}`;
+
+            try {
+                // Try copying to clipboard first
+                await navigator.clipboard.writeText(shareText);
+                
+                // If native share is supported, open it
+                if (navigator.share) {
+                    await navigator.share({
+                        title: 'VX Product Catalog',
+                        text: shareText
+                    });
+                } else {
+                    showNotification('Catalog link copied to clipboard!', 'success');
+                }
+            } catch (err) {
+                console.error('Sharing failed:', err);
+                showNotification('Link copied to clipboard!', 'success');
+            }
+        }
     </script>
 </body>
 </html>

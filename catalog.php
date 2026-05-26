@@ -93,7 +93,7 @@ try {
             <!-- Instant Search Input -->
             <div class="relative">
                 <div class="flex items-center bg-dark-900 border border-white/10 rounded-2xl p-3.5 neon-focus transition-all">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4.5 h-4.5 text-gray-500 mr-2.5 shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 text-gray-500 mr-2.5 shrink-0">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.604 10.604Z" />
                     </svg>
                     <input 
