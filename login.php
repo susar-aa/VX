@@ -53,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VX ERP + POS - Login</title>
+    <link rel="manifest" href="manifest.json">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -229,6 +230,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                 `;
             }
+        }
+
+        // Service Worker registration for PWA mobile screens
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('VX Service Worker registered successfully!'))
+                    .catch(err => console.error('VX Service Worker registration failed:', err));
+            });
         }
     </script>
 </body>
