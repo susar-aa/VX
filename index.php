@@ -686,6 +686,16 @@ $current_user_id = $_SESSION['user_id'];
                             No Image
                         </div>
                     </div>
+                    <!-- Upload Progress Bar -->
+                    <div id="uploadProgressWrapper" class="hidden w-full bg-dark-950 border border-white/5 rounded-xl p-2.5 space-y-1.5 mt-2">
+                        <div class="flex justify-between items-center text-[10px] font-bold">
+                            <span class="text-gray-500 uppercase tracking-wider">Uploading Image...</span>
+                            <span id="uploadProgressPercent" class="text-lime">0%</span>
+                        </div>
+                        <div class="w-full bg-dark-800 rounded-full h-1.5 overflow-hidden">
+                            <div id="uploadProgressBar" class="bg-lime h-1.5 transition-all duration-150" style="width: 0%"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Status Checkbox -->
@@ -1312,8 +1322,8 @@ $current_user_id = $_SESSION['user_id'];
             }
         }
 
-        // Save (Add / Edit) Product via AJAX
-        async function saveProduct(event) {
+        // Save (Add / Edit) Product via AJAX with Upload Progress
+        function saveProduct(event) {
             event.preventDefault();
             const form = document.getElementById('productForm');
             const formData = new FormData(form);
@@ -1324,24 +1334,59 @@ $current_user_id = $_SESSION['user_id'];
             const isEdit = formData.get('id') !== '';
             const actionUrl = isEdit ? 'api.php?action=edit_product' : 'api.php?action=add_product';
 
-            try {
-                const res = await fetch(actionUrl, {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await res.json();
+            // Show progress bar only if a new image file is chosen
+            const fileInput = document.getElementById('prodImage');
+            const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
+            
+            const progressWrapper = document.getElementById('uploadProgressWrapper');
+            const progressPercent = document.getElementById('uploadProgressPercent');
+            const progressBar = document.getElementById('uploadProgressBar');
 
-                if (data.success) {
-                    showNotification(data.message, 'success');
-                    closeProductModal();
-                    loadInventoryProducts();
-                } else {
-                    showNotification(data.message, 'error');
-                }
-            } catch (err) {
-                console.error(err);
-                showNotification('Submit failed. Connectivity error.', 'error');
+            if (hasFile) {
+                if (progressWrapper) progressWrapper.classList.remove('hidden');
+                if (progressPercent) progressPercent.innerText = '0%';
+                if (progressBar) progressBar.style.width = '0%';
             }
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', actionUrl, true);
+
+            // Setup upload progress listener if file exists
+            if (hasFile && xhr.upload) {
+                xhr.upload.onprogress = function(e) {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        if (progressPercent) progressPercent.innerText = percent + '%';
+                        if (progressBar) progressBar.style.width = percent + '%';
+                    }
+                };
+            }
+
+            xhr.onload = function() {
+                // Reset progress bar on complete
+                if (progressWrapper) progressWrapper.classList.add('hidden');
+                
+                try {
+                    const data = JSON.parse(xhr.responseText);
+                    if (xhr.status === 200 && data.success) {
+                        showNotification(data.message, 'success');
+                        closeProductModal();
+                        loadInventoryProducts();
+                    } else {
+                        showNotification(data.message || 'Saving product failed.', 'error');
+                    }
+                } catch (err) {
+                    console.error('XHR response parse error:', xhr.responseText, err);
+                    showNotification('Server response error. Please try again.', 'error');
+                }
+            };
+
+            xhr.onerror = function() {
+                if (progressWrapper) progressWrapper.classList.add('hidden');
+                showNotification('Submit failed. Connectivity error.', 'error');
+            };
+
+            xhr.send(formData);
         }
 
         // Delete Product via AJAX
