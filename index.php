@@ -197,29 +197,24 @@ $current_user_id = $_SESSION['user_id'];
                 </div>
             </div>
 
-            <!-- Quick Action Buttons -->
-            <div>
-                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2.5">Quick Actions</h4>
-                <div class="grid grid-cols-3 gap-2.5">
-                    <button onclick="showTab('pos')" class="bg-lime text-black font-bold p-3.5 rounded-2xl text-xs flex flex-col items-center justify-center gap-2 tap-scale hover:opacity-95 shadow-lg shadow-lime/10">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                        </svg>
-                        <span>New Sale</span>
-                    </button>
-                    <button onclick="openProductModal()" class="bg-dark-800 border border-white/10 font-bold p-3.5 rounded-2xl text-xs flex flex-col items-center justify-center gap-2 tap-scale hover:border-lime/40">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-lime">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
-                        </svg>
-                        <span>Add Product</span>
-                    </button>
-                    <button onclick="showTab('accounts')" class="bg-dark-800 border border-white/10 font-bold p-3.5 rounded-2xl text-xs flex flex-col items-center justify-center gap-2 tap-scale hover:border-lime/40">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 text-lime">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 8.25H9m6 3H9m3 1.5H9M15 15h-6M9 6h6m-6 12h6" />
-                        </svg>
-                        <span>Ledger</span>
-                    </button>
-                </div>
+            <!-- Manual PWA Install Prompt Button -->
+            <div id="pwaInstallContainer" class="hidden">
+                <button onclick="triggerPwaInstall()" class="w-full bg-dark-900 border border-white/10 hover:border-lime/40 text-lime font-bold py-3.5 rounded-2xl text-xs tap-scale flex items-center justify-center gap-2 mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                    </svg>
+                    <span>Install VX Standalone App</span>
+                </button>
+            </div>
+
+            <!-- New Sale Action Button -->
+            <div class="mt-4">
+                <button onclick="showTab('pos')" class="w-full bg-lime text-black font-extrabold py-4 rounded-2xl text-sm tracking-wide tap-scale flex items-center justify-center gap-2 shadow-lg shadow-lime/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    <span>New Sale</span>
+                </button>
             </div>
 
             <!-- Recent Sales Section -->
@@ -1616,6 +1611,29 @@ $current_user_id = $_SESSION['user_id'];
                     .catch(err => console.error('VX Service Worker registration failed:', err));
             });
         }
+
+        // Manual PWA install prompt handler
+        let deferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const btn = document.getElementById('pwaInstallContainer');
+            if (btn) btn.classList.remove('hidden');
+        });
+
+        async function triggerPwaInstall() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            deferredPrompt = null;
+            const btn = document.getElementById('pwaInstallContainer');
+            if (btn) btn.classList.add('hidden');
+        }
+
+        window.addEventListener('appinstalled', () => {
+            const btn = document.getElementById('pwaInstallContainer');
+            if (btn) btn.classList.add('hidden');
+        });
     </script>
 </body>
 </html>
