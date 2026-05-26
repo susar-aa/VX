@@ -1,7 +1,7 @@
 {
-  "name": "VX ERP + POS",
+  "name": "VX",
   "short_name": "VX",
-  "description": "Lightweight, mobile-optimized ERP + POS for 2-person partnerships",
+  "description": "VX ERP BY SUZXLABS",
   "start_url": "./index.php",
   "display": "standalone",
   "background_color": "#030303",
