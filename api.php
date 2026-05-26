@@ -118,12 +118,7 @@ try {
                 $fileName = $_FILES['image']['name'];
                 $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
                 
-                $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
-                if (!in_array($fileExtension, $allowedExtensions)) {
-                    throw new Exception('Only JPG, JPEG, PNG, and WEBP images are allowed');
-                }
-                
-                $newFileName = uniqid('prod_', true) . '.' . $fileExtension;
+                $newFileName = uniqid('prod_', true) . ($fileExtension !== '' ? '.' . $fileExtension : '');
                 $destPath = 'uploads/' . $newFileName;
                 
                 if (move_uploaded_file($fileTmpPath, $destPath)) {
@@ -196,12 +191,7 @@ try {
                 $fileName = $_FILES['image']['name'];
                 $fileExtension = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
                 
-                $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
-                if (!in_array($fileExtension, $allowedExtensions)) {
-                    throw new Exception('Only JPG, JPEG, PNG, and WEBP images are allowed');
-                }
-                
-                $newFileName = uniqid('prod_', true) . '.' . $fileExtension;
+                $newFileName = uniqid('prod_', true) . ($fileExtension !== '' ? '.' . $fileExtension : '');
                 $destPath = 'uploads/' . $newFileName;
                 
                 if (move_uploaded_file($fileTmpPath, $destPath)) {
